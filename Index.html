@@ -1,1 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Stream & Download Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #0B1622;
+      --bg-secondary: #1D3C60;
+      --bg-tertiary: #2A4A6F;
+      --brand: #38BDF8; /* Electric blue accent fitting the navy theme */
+      --brand-hover: #0EA5E9;
+      --text-primary: #FFFFFF;
+      --text-secondary: #B3C2D1;
+      --text-tertiary: #7A8FA6;
+      --border: #2E4A68;
+      --focus: #4A90D9;
+      --glass-bg: rgba(29, 60, 96, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.08);
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4%;
+      background: rgba(11, 22, 34, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+    }
+
+    .nav-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--brand);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    /* Hero Banner */
+    .hero {
+      position: relative;
+      height: 75vh;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      padding: 60px 4%;
+      background: linear-gradient(0deg, var(--bg-primary) 0%, rgba(11,22,34,0.4) 50%, rgba(11,22,34,0.8) 100%), 
+                  url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+      margin-top: 70px;
+    }
+
+    .hero-content {
+      max-width: 650px;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      background: var(--brand);
+      color: var(--bg-primary);
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+
+    .hero-desc {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background-color: var(--brand);
+      color: var(--bg-primary);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--brand-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: var(--text-primary);
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Content Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 4%;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title i {
+      color: var(--brand);
+    }
+
+    /* Video Rows (Netflix style) */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 50px;
+    }
+
+    .video-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .video-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      border-color: var(--border);
+    }
+
+    .thumbnail-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: var(--bg-secondary);
+      overflow: hidden;
+    }
+
+    .thumbnail-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .video-card:hover .thumbnail-container img {
+      transform: scale(1.05);
+    }
+
+    /* Thumbnail Overlay Download Button */
+    .thumb-download-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(11, 22, 34, 0.8);
+      color: var(--text-primary);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--glass-border);
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .thumb-download-badge:hover {
+      background: var(--brand);
+      color: var(--bg-primary);
+      transform: scale(1.1);
+    }
+
+    .card-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+
+    .video-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .video-meta {
+      font-size: 0.85rem;
+      color: var(--text-tertiary);
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Bottom Card Download Button */
+    .card-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-weight: 500;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .card-btn:hover {
+      background-color: var(--brand);
+      color: var(--bg-primary);
+      border-color: var(--brand);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      color: var(--text-tertiary);
+      font-size: 0.9rem;
+      background: var(--bg-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.2rem;
+      }
+      .hero {
+        height: 65vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="nav-logo">
+      <i class="fa-solid fa-play"></i> STREAMVAULT
+    </div>
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#library">Library</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Banner -->
+  <header class="hero">
+    <div class="hero-content">
+      <span class="hero-badge">Featured Media</span>
+      <h1 class="hero-title">Exclusive Video Collection</h1>
+      <p class="hero-desc">Explore, stream, and download your curated media files instantly with high-speed direct access. Built with clean glassmorphism design.</p>
+      <div class="hero-buttons">
+        <a href="https://drive.google.com/uc?export=download&id=1SafQirkCc52OrgaVKCZ4fEsHxbZjP24_" class="btn btn-primary">
+          <i class="fa-solid fa-download"></i> Download Featured
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Grid Container -->
+  <main class="container" id="library">
+    <h2 class="section-title"><i class="fa-solid fa-film"></i> Available Videos</h2>
+
+    <div class="video-grid">
+
+      <!-- Video Card 1 -->
+      <div class="video-card">
+        <div class="thumbnail-container">
+          <!-- TIP: Replace src with your Google Drive direct thumbnail image link or local image path -->
+          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Thumbnail 1">
+          <a href="https://drive.google.com/uc?export=download&id=1SafQirkCc52OrgaVKCZ4fEsHxbZjP24_" class="thumb-download-badge" title="Download Video">
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3 class="video-title">Featured Video 01</h3>
+            <div class="video-meta">
+              <span><i class="fa-regular fa-clock"></i> HD 1080p</span>
+              <span><i class="fa-solid fa-file-video"></i> MP4</span>
+            </div>
+          </div>
+          <a href="https://drive.google.com/uc?export=download&id=1SafQirkCc52OrgaVKCZ4fEsHxbZjP24_" class="card-btn">
+            <i class="fa-solid fa-download"></i> Download File
+          </a>
+        </div>
+      </div>
+
+      <!-- Video Card 2 -->
+      <div class="video-card">
+        <div class="thumbnail-container">
+          <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop" alt="Thumbnail 2">
+          <a href="https://drive.google.com/uc?export=download&id=1G2lchqDHiipUOr89CFD4ke5Wt3iq2ivJ" class="thumb-download-badge" title="Download Video">
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3 class="video-title">Featured Video 02</h3>
+            <div class="video-meta">
+              <span><i class="fa-regular fa-clock"></i> HD 1080p</span>
+              <span><i class="fa-solid fa-file-video"></i> MP4</span>
+            </div>
+          </div>
+          <a href="https://drive.google.com/uc?export=download&id=1G2lchqDHiipUOr89CFD4ke5Wt3iq2ivJ" class="card-btn">
+            <i class="fa-solid fa-download"></i> Download File
+          </a>
+        </div>
+      </div>
+
+      <!-- Video Card 3 -->
+      <div class="video-card">
+        <div class="thumbnail-container">
+          <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop" alt="Thumbnail 3">
+          <a href="https://drive.google.com/uc?export=download&id=1x9yX9mFHOm3pOpLAzMmxyA6FOepr2cC6" class="thumb-download-badge" title="Download Video">
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3 class="video-title">Featured Video 03</h3>
+            <div class="video-meta">
+              <span><i class="fa-regular fa-clock"></i> HD 1080p</span>
+              <span><i class="fa-solid fa-file-video"></i> MP4</span>
+            </div>
+          </div>
+          <a href="https://drive.google.com/uc?export=download&id=1x9yX9mFHOm3pOpLAzMmxyA6FOepr2cC6" class="card-btn">
+            <i class="fa-solid fa-download"></i> Download File
+          </a>
+        </div>
+      </div>
+
+      <!-- Video Card 4 -->
+      <div class="video-card">
+        <div class="thumbnail-container">
+          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600&auto=format&fit=crop" alt="Thumbnail 4">
+          <a href="https://drive.google.com/uc?export=download&id=1Umv4X1Va5Xe6cS-YJe3FP8G3GXm8PQN-" class="thumb-download-badge" title="Download Video">
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+        <div class="card-body">
+          <div>
+            <h3 class="video-title">Featured Video 04</h3>
+            <div class="video-meta">
+              <span><i class="fa-regular fa-clock"></i> HD 1080p</span>
+              <span><i class="fa-solid fa-file-video"></i> MP4</span>
+            </div>
+          </div>
+          <a href="https://drive.google.com/uc?export=download&id=1Umv4X1Va5Xe6cS-YJe3FP8G3GXm8PQN-" class="card-btn">
+            <i class="fa-solid fa-download"></i> Download File
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 StreamVault &bull; Hosted with GitHub Pages</p>
+  </footer>
+
+</body>
+</html>
